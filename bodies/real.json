@@ -1,0 +1,4 @@
+[
+{"Url": "https://api.github.com/users/slawosz/repos", "Method": "Get"},
+{"Url": "https://api.github.com/users/baisa/repos", "Method": "Get"},
+{"Url": "https://api.github.com/users/lukesarnacki/repos", "Method": "Get"}]

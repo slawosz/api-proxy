@@ -22,7 +22,7 @@ func primitiveHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func usersHandler(w http.ResponseWriter, r *http.Request) {
-	//start := time.Now().UnixNano()
+	start := time.Now().UnixNano()
 	vars := mux.Vars(r)
 	user := vars["user"]
 
@@ -38,6 +38,6 @@ func usersHandler(w http.ResponseWriter, r *http.Request) {
 	buf, _ := json.Marshal(resp)
 
 	fmt.Fprintf(w, string(buf))
-	//end := time.Now().UnixNano()
-	//fmt.Printf("Completed in: %v ns\n", (end - start))
+	end := time.Now().UnixNano()
+	fmt.Printf("Completed in: %v ns\n", (end - start))
 }
