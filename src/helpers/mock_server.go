@@ -1,4 +1,4 @@
-package main
+package helpers
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func serveMock() {
+func ServeMock() {
 	r := mux.NewRouter()
 	r.HandleFunc("/users/{user}/repos", usersHandler)
 	http.Handle("/", r)

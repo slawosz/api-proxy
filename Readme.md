@@ -23,5 +23,10 @@ Why?
 * faster calls
 * less time to get all api calls
 
+TODO:
+====
+* Limit number of requests
+* Add timeout for every request
+
 // maybe
 * support for hypermedia api ie. Github
