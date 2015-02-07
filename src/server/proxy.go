@@ -37,7 +37,7 @@ func makeRequests(reqs []*Req, w http.ResponseWriter) http.ResponseWriter {
 			select {
 			case r := <-resp: // when request finishes
 				responsesCh <- r // success, distribute response to return channel
-			case <-time.Tick(timeout * time.Millisecond): // when request takes long
+			case <-time.Tick(timeout * time.Millisecond): // when request tas long
 				fmt.Println("timeout")
 				// handle delay
 				delay := NewDelay()
@@ -47,6 +47,7 @@ func makeRequests(reqs []*Req, w http.ResponseWriter) http.ResponseWriter {
 				// TODO: we need to send delay information to responses channel
 				responsesCh <- delay.Json()
 			}
+			wg.Done()
 		}()
 	}
 
@@ -64,7 +65,8 @@ func makeRequests(reqs []*Req, w http.ResponseWriter) http.ResponseWriter {
 	// request will be finished
 	var responses []*Resp
 	for resp := range responsesCh {
-		responses = append(responses, &Resp{Body: resp})
+		fmt.Println(string(resp))
+		responses = append(responses, &Resp{Body: MarshaledBytes(resp)})
 	}
 	json, err := json.Marshal(responses)
 	if err != nil {
@@ -79,7 +81,6 @@ func makeRequests(reqs []*Req, w http.ResponseWriter) http.ResponseWriter {
 func makeRequest(r *Req, wg *sync.WaitGroup, body chan []byte) {
 	t := helpers.StartTimer(r.Url)
 	wg.Add(1)
-	defer wg.Done()
 	resp, err := client.Get(r.Url)
 	if err != nil {
 		fmt.Println(err)
