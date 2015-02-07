@@ -32,25 +32,31 @@ func makeRequests(reqs []*Req, w http.ResponseWriter) http.ResponseWriter {
 	for _, req := range reqs {
 		resp := make(chan []byte)     // channel to collect response
 		go makeRequest(req, wg, resp) // make actual request
-		select {
-		case r := <-resp:
-			responsesCh <- r // success, distribute response to return channel
-		case <-time.Tick(timeout * time.Millisecond):
-			// handle delay
-			delay := NewDelay()
-			go func() {
-				delay.Wait(resp)
-			}()
-			// TODO: we need to send delay information to responses channel
-			responsesCh <- delay.Json()
-		}
+		// handle response passing
+		go func() {
+			select {
+			case r := <-resp: // when request finishes
+				responsesCh <- r // success, distribute response to return channel
+			case <-time.Tick(timeout * time.Millisecond): // when request thaks long
+				fmt.Println("timeout")
+				// handle delay
+				delay := NewDelay()
+				go func() {
+					delay.Wait(resp)
+				}()
+				// TODO: we need to send delay information to responses channel
+				responsesCh <- delay.Json()
+			}
+		}()
 	}
 
 	t.Check("After loop")
 	// STEP 2: Wait until all responses will finish.
 	// This is background thread.
 	go func() {
+		fmt.Println("before wait")
 		wg.Wait()
+		fmt.Println("after wait")
 		close(responsesCh)
 	}()
 
@@ -90,6 +96,5 @@ func makeRequest(r *Req, wg *sync.WaitGroup, body chan []byte) {
 	t.Check("Before pushing")
 	body <- b
 	t.Check("After pushing")
-	// fmt.Printf("Body: %v", string(body))
 	t.Finish(fmt.Sprintf("Req finished"))
 }
