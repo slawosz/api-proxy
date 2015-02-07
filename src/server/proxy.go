@@ -37,7 +37,7 @@ func makeRequests(reqs []*Req, w http.ResponseWriter) http.ResponseWriter {
 			select {
 			case r := <-resp: // when request finishes
 				responsesCh <- r // success, distribute response to return channel
-			case <-time.Tick(timeout * time.Millisecond): // when request thaks long
+			case <-time.Tick(timeout * time.Millisecond): // when request takes long
 				fmt.Println("timeout")
 				// handle delay
 				delay := NewDelay()
