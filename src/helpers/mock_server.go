@@ -28,7 +28,7 @@ func usersHandler(w http.ResponseWriter, r *http.Request) {
 
 	if user == "timeout" {
 		fmt.Println("using timeout")
-		time.Sleep(300 * time.Millisecond)
+		time.Sleep(1800 * time.Millisecond)
 	}
 
 	resp := map[string]string{

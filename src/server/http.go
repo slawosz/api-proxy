@@ -14,9 +14,10 @@ import (
 
 // serves http server, and blocks
 func Start() {
+	fmt.Println("Server started on 8001")
 	// callbacks
 	r := mux.NewRouter()
-	r.HandleFunc("/{uuid}", delayHandler)
+	r.HandleFunc("{uuid}", delayHandler)
 	http.Handle("/callback", r)
 	// proxy
 	http.HandleFunc("/call", proxyHandler)
@@ -42,6 +43,7 @@ func proxyHandler(w http.ResponseWriter, r *http.Request) {
 
 // handles delayed requests
 func delayHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("calling delay")
 	vars := mux.Vars(r)
 	uuid := vars["uuid"]
 	t, ok := Delays[uuid]

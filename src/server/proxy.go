@@ -15,14 +15,19 @@ const (
 )
 
 var (
-	Delays map[string]*Delay
 	client *http.Client
+	Delays map[string]*Delay
 )
 
 func init() {
 	client = &http.Client{}
+	Delays = make(map[string]*Delay)
 }
 
+// This functions:
+// 1. Makes paraller requests
+// 2. Collects responses - with delay handling
+// 3. Writes response to response writer
 func makeRequests(reqs []*Req, w http.ResponseWriter) http.ResponseWriter {
 	t := helpers.StartTimer("*")
 	responsesCh := make(chan []byte)
@@ -51,13 +56,10 @@ func makeRequests(reqs []*Req, w http.ResponseWriter) http.ResponseWriter {
 		}()
 	}
 
-	t.Check("After loop")
 	// STEP 2: Wait until all responses will finish.
 	// This is background thread.
 	go func() {
-		fmt.Println("before wait")
 		wg.Wait()
-		fmt.Println("after wait")
 		close(responsesCh)
 	}()
 
@@ -78,24 +80,20 @@ func makeRequests(reqs []*Req, w http.ResponseWriter) http.ResponseWriter {
 	return w
 }
 
+// makes request and saves body to response
+// TODO: probably we want to get channel for resp
 func makeRequest(r *Req, wg *sync.WaitGroup, body chan []byte) {
-	t := helpers.StartTimer(r.Url)
 	wg.Add(1)
 	resp, err := client.Get(r.Url)
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
 	}
-	t.Check("Request done")
 	defer resp.Body.Close()
 	b, err := ioutil.ReadAll(resp.Body)
-	t.Check("Body read done")
 	if err != nil {
 		fmt.Println(err)
 		panic(err)
 	}
-	t.Check("Before pushing")
 	body <- b
-	t.Check("After pushing")
-	t.Finish(fmt.Sprintf("Req finished"))
 }
