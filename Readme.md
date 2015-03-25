@@ -20,9 +20,8 @@ url link will be provided to get delayed body (comming soon).
 Installation
 ============
 
-
 ```
-export GOPATH=`pwd`
+$ export GOPATH=`pwd`
 $ make
 ```
 
@@ -35,7 +34,6 @@ bin/api-proxy-server
 
 Testing
 =======
-
 
 Httpie:
 ```
@@ -59,6 +57,7 @@ TODO:
 ====
 * Limit number of requests
 * Add timeout for every request
-
-// maybe
-* support for hypermedia api ie. Github
+* Pass headers
+* TLS
+* Webhooks support
+* support for hypermedia api ie. Github (would be fun!)
